@@ -22,6 +22,8 @@ export default function HeroBanner() {
           alt="MultiVida Store"
           className="mb-4 h-20 md:h-24 object-contain"
           priority
+          width={600}
+          height={300}
         />
         <span className="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-brand-accent-red uppercase bg-white/20 backdrop-blur rounded-full border border-white/30">
           Oferta especial
