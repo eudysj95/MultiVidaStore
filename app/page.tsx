@@ -7,17 +7,17 @@ import CategoryCard from "@/components/CategoryCard";
 import ProductCard from "@/components/ProductCard";
 
 const CATEGORIES = [
-  { name: "Mobiles", image: "/images/categories/mobiles.png" },
+  { name: "Móviles", image: "/images/categories/mobiles.png" },
   { name: "Laptops", image: "/images/categories/laptops.png" },
-  { name: "Headphones", image: "/images/categories/headphones.png" },
-  { name: "Monitors & TVs", image: "/images/categories/monitors.png" },
-  { name: "Speakers", image: "/images/categories/speakers.png" },
+  { name: "Audífonos", image: "/images/categories/headphones.png" },
+  { name: "Monitores y TVs", image: "/images/categories/monitors.png" },
+  { name: "Parlantes", image: "/images/categories/speakers.png" },
 ];
 
 const POPULAR_PRODUCTS = [
   {
     id: "1",
-    name: "Magnetic Case",
+    name: "Funda magnética",
     price: 13.49,
     oldPrice: 18.99,
     image: "/images/products/magnetic-case.png",
@@ -25,7 +25,7 @@ const POPULAR_PRODUCTS = [
   },
   {
     id: "2",
-    name: "UCOMX Nano 3 in 1",
+    name: "UCOMX Nano 3 en 1",
     price: 39.99,
     oldPrice: 49.99,
     image: "/images/products/ucomx-nano.png",
@@ -49,7 +49,7 @@ const POPULAR_PRODUCTS = [
   },
   {
     id: "5",
-    name: "BUGANI BT Speaker",
+    name: "Bocina BUGANI BT",
     price: 59.93,
     oldPrice: 79.08,
     image: "/images/products/bugani-speaker.png",
@@ -98,9 +98,9 @@ export default function Home() {
         <HeroBanner />
         <section className="mt-12">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-brand-black">Trending Categories</h2>
+            <h2 className="text-2xl font-bold text-brand-black">Categorías destacadas</h2>
             <a href="#" className="text-sm font-medium text-brand-blue">
-              Show More →
+              Ver más →
             </a>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -112,9 +112,9 @@ export default function Home() {
 
         <section className="mt-16">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-brand-black">Popular Products</h2>
+            <h2 className="text-2xl font-bold text-brand-black">Productos populares</h2>
             <a href="#" className="text-sm font-medium text-brand-blue">
-              Show More →
+              Ver más →
             </a>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-6">
