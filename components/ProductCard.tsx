@@ -48,7 +48,7 @@ export default function ProductCard({
                 ★
               </span>
             ))}
-            <span className="text-xs text-gray-500 ml-1">({Math.floor(Math.random() * 50) + 1})</span>
+            <span className="text-xs text-gray-500 ml-1">(128 reseñas)</span>
           </div>
           <h3 className="font-semibold text-brand-black text-sm leading-tight line-clamp-2 mb-2">
             {name}

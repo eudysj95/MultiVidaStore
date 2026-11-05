@@ -1,7 +1,6 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect } from "react";
 import BrandSwitch from "@/components/BrandSwitch";
 import HeroBanner from "@/components/HeroBanner";
 import CategoryCard from "@/components/CategoryCard";
@@ -85,12 +84,6 @@ const POPULAR_PRODUCTS = [
 export default function Home() {
   const searchParams = useSearchParams();
   const payment = (searchParams.get("payment") as string) || "bolivares";
-
-  useEffect(() => {
-    if (!searchParams.get("payment")) {
-      window.location.replace(`/?payment=${payment}`);
-    }
-  }, []);
 
   const paymentLabels: Record<string, string> = {
     bolivares: "Bs.",
