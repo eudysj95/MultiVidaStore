@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function HeroBanner() {
   return (
-    <section className="w-full py-20 flex items-center justify-center bg-white">
+    <section className="w-full flex items-center justify-center bg-white py-4">
       <Image
         src="/images/logo.jpeg"
         alt="MultiVida Store"
