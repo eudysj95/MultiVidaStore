@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 type Currency = "bolivares" | "dolar" | "cashea";
@@ -51,7 +50,7 @@ export default function ProductCard({
   const stars = Array.from({ length: 5 }, (_, i) => i < rating);
 
   return (
-    <Link href={href || "#"} className="block">
+    <div className="block cursor-pointer hover:shadow-lg transition-shadow">
       <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
         <div className="relative aspect-square bg-gray-50 overflow-hidden">
           <Image
@@ -101,6 +100,6 @@ export default function ProductCard({
           </div>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
