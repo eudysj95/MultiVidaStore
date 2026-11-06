@@ -7,11 +7,11 @@ import CategoryCard from "@/components/CategoryCard";
 import ProductCard from "@/components/ProductCard";
 
 const CATEGORIES = [
-  { name: "Móviles", image: "/images/categories/mobiles.png" },
-  { name: "Laptops", image: "/images/categories/laptops.png" },
-  { name: "Audífonos", image: "/images/categories/headphones.png" },
-  { name: "Monitores y TVs", image: "/images/categories/monitors.png" },
-  { name: "Parlantes", image: "/images/categories/speakers.png" },
+  { name: "Cafeteras", image: "/images/categories/cafeteras.png" },
+  { name: "Cocinas", image: "/images/categories/cocinas.png" },
+  { name: "Lavadoras", image: "/images/categories/lavadoras.png" },
+  { name: "Licuadoras", image: "/images/categories/licuadoras.png" },
+  { name: "Neveras", image: "/images/categories/neveras.png" },
 ];
 
 const POPULAR_PRODUCTS = [
