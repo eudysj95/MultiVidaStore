@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import BrandSwitch from "@/components/BrandSwitch";
 import HeroBanner from "@/components/HeroBanner";
 import CategoryCard from "@/components/CategoryCard";
-import ProductCard from "@/components/ProductCard";
+import ProductCard, { type Currency } from "@/components/ProductCard";
 
 const CATEGORIES = [
   { name: "Cafeteras", image: "/images/categories/cafeteras.png" },
@@ -119,7 +119,12 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-6">
             {POPULAR_PRODUCTS.map((product) => (
-              <ProductCard key={product.id} {...product} href="#/" />
+              <ProductCard
+                key={product.id}
+                {...product}
+                currency={payment as Currency}
+                href="#/"
+              />
             ))}
           </div>
         </section>

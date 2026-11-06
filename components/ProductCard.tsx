@@ -2,6 +2,17 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+
+type Currency = "bolivares" | "dolar" | "cashea";
+
+export type { Currency };
+
+const CURRENCY_SYMBOLS: Record<Currency, string> = {
+  bolivares: "Bs.",
+  dolar: "USD",
+  cashea: "Cashea",
+};
 
 interface ProductCardProps {
   id: string;
@@ -9,8 +20,9 @@ interface ProductCardProps {
   price: number;
   oldPrice?: number;
   image: string;
-  rating: number;
-  href: string;
+  rating?: number;
+  href?: string;
+  currency?: Currency;
 }
 
 export default function ProductCard({
@@ -21,11 +33,25 @@ export default function ProductCard({
   image,
   rating = 5,
   href,
+  currency: currencyProp,
 }: ProductCardProps) {
+  const searchParams = useSearchParams();
+  const currency = (currencyProp ||
+    (searchParams.get("payment") as Currency) ||
+    "bolivares") as Currency;
+  const symbol = CURRENCY_SYMBOLS[currency];
+
+  // ⚠️ Reemplazá este número por el WhatsApp real del dueño
+  const whatsappNumber = "5551234567";
+  const productLink =
+    typeof window !== "undefined" ? window.location.href : "";
+  const message = `Hola, me interesa el producto "${name}" a ${symbol} ${price.toLocaleString()}. Link: ${productLink}`;
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+
   const stars = Array.from({ length: 5 }, (_, i) => i < rating);
 
   return (
-    <Link href={href} className="block">
+    <Link href={href || "#"} className="block">
       <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
         <div className="relative aspect-square bg-gray-50 overflow-hidden">
           <Image
@@ -53,13 +79,25 @@ export default function ProductCard({
           <h3 className="font-semibold text-brand-black text-sm leading-tight line-clamp-2 mb-2">
             {name}
           </h3>
-          <div className="mt-auto flex items-baseline gap-2">
-            <span className="font-bold text-brand-blue text-lg">Bs. {price.toLocaleString()}</span>
-            {oldPrice && (
-              <span className="text-gray-400 text-sm line-through">
-                Bs. {oldPrice.toLocaleString()}
+          <div className="mt-auto flex flex-col gap-2">
+            <div className="flex items-baseline gap-2">
+              <span className="font-bold text-brand-blue text-lg">
+                {symbol} {price.toLocaleString()}
               </span>
-            )}
+              {oldPrice && (
+                <span className="text-gray-400 text-sm line-through">
+                  {symbol} {oldPrice.toLocaleString()}
+                </span>
+              )}
+            </div>
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-2 px-4 bg-brand-green text-white text-center text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
+            >
+              Consultar por WhatsApp
+            </a>
           </div>
         </div>
       </div>
