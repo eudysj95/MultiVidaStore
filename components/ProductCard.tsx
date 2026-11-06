@@ -42,7 +42,7 @@ export default function ProductCard({
   const symbol = CURRENCY_SYMBOLS[currency];
 
   // ⚠️ Reemplazá este número por el WhatsApp real del dueño
-  const whatsappNumber = "5551234567";
+  const whatsappNumber = "584246187569";
   const productLink =
     typeof window !== "undefined" ? window.location.href : "";
   const message = `Hola, me interesa el producto "${name}" a ${symbol} ${price.toLocaleString()}. Link: ${productLink}`;
