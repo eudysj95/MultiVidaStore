@@ -3,6 +3,8 @@
 import { createClient } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import "@/app/globals.css";
 
 export default function AdminLayout({
   children,
@@ -11,11 +13,15 @@ export default function AdminLayout({
 }) {
   const supabase = createClient();
   const router = useRouter();
+  const [pathname, setPathname] = useState<string>("/admin/login");
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<any>(null);
   const [supabaseReady, setSupabaseReady] = useState(false);
 
   useEffect(() => {
+    // Obtener pathname en el cliente
+    setPathname(window.location.pathname);
+
     // Si Supabase no está configurado, permitir acceso (modo desarrollo)
     if (!supabase) {
       setSupabaseReady(true);
@@ -62,7 +68,7 @@ export default function AdminLayout({
   // Si Supabase no está configurado, mostrar hijos directamente (modo dev)
   if (!supabase) {
     return (
-      <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-white">
         <nav className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between h-16 items-center">
@@ -71,18 +77,18 @@ export default function AdminLayout({
                 <span className="text-xs text-gray-400 uppercase tracking-wider">Admin</span>
               </div>
               <div className="flex items-center gap-4">
-                <a
+                <Link
                   href="/admin/products"
                   className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-brand-blue transition-colors"
                 >
                   Productos
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/admin/categories"
                   className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-brand-blue transition-colors"
                 >
                   Categorías
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -95,6 +101,10 @@ export default function AdminLayout({
   }
 
   if (!session) {
+    // Permitir acceso al login sin autenticación
+    if (pathname === "/admin/login") {
+      return <>{children}</>;
+    }
     return null; // El useEffect redirige
   }
 
@@ -108,18 +118,18 @@ export default function AdminLayout({
               <span className="text-xs text-gray-400 uppercase tracking-wider">Admin</span>
             </div>
             <div className="flex items-center gap-4">
-              <a
+              <Link
                 href="/admin/products"
                 className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-brand-blue transition-colors"
               >
                 Productos
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/admin/categories"
                 className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-brand-blue transition-colors"
               >
                 Categorías
-              </a>
+              </Link>
               <button
                 onClick={() => supabase.auth.signOut()}
                 className="px-3 py-2 text-sm font-medium text-red-600 hover:text-red-700 transition-colors"

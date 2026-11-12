@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 
 type Currency = "bolivares" | "dolar" | "cashea";
 
@@ -42,8 +43,13 @@ export default function ProductCard({
 
   // ⚠️ Reemplazá este número por el WhatsApp real del dueño
   const whatsappNumber = "584246187569";
-  const productLink =
-    typeof window !== "undefined" ? window.location.href : "";
+  const [productLink, setProductLink] = useState("");
+
+  // Solo en el cliente, capturamos la URL actual para el mensaje de WhatsApp
+  useEffect(() => {
+    setProductLink(window.location.href);
+  }, []);
+
   const message = `Hola, me interesa el producto "${name}" a ${symbol} ${price.toLocaleString()}. Link: ${productLink}`;
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
@@ -81,11 +87,11 @@ export default function ProductCard({
           <div className="mt-auto flex flex-col gap-2">
             <div className="flex items-baseline gap-2">
               <span className="font-bold text-brand-blue text-lg">
-                {symbol} {price.toLocaleString()}
+                {symbol} {price.toFixed(2)}
               </span>
               {oldPrice && (
                 <span className="text-gray-400 text-sm line-through">
-                  {symbol} {oldPrice.toLocaleString()}
+                  {symbol} {oldPrice.toFixed(2)}
                 </span>
               )}
             </div>
