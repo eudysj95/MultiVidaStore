@@ -8,10 +8,10 @@ interface Product {
   id: string;
   name: string;
   price_bs: number;
-  price_usd: number;
-  price_cashea: number;
-  category: string;
-  image_url: string;
+  price_usd: number | null;
+  price_cashea: number | null;
+  category: { name: string } | null;
+  image_url: string | null;
   created_at: string;
 }
 
@@ -19,51 +19,54 @@ export default function ProductsPage() {
   const supabase = createClient();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Por ahora usamos datos de ejemplo hasta que conectemos el backend
-    setProducts([
-      {
-        id: "1",
-        name: "Funda magnética",
-        price_bs: 13.49,
-        price_usd: 39.99,
-        price_cashea: 39.99,
-        category: "Accesorios",
-        image_url: "/images/products/magnetic-case.png",
-        created_at: "2026-11-01",
-      },
-      {
-        id: "2",
-        name: "UCOMX Nano 3 en 1",
-        price_bs: 39.99,
-        price_usd: 49.99,
-        price_cashea: 49.99,
-        category: "Accesorios",
-        image_url: "/images/products/ucomx-nano.png",
-        created_at: "2026-11-01",
-      },
-      {
-        id: "3",
-        name: "Bose QuietComfort",
-        price_bs: 379.00,
-        price_usd: 429.00,
-        price_cashea: 429.00,
-        category: "Audio",
-        image_url: "/images/products/bose-quietcomfort.png",
-        created_at: "2026-11-02",
-      },
-    ]);
-    setLoading(false);
+    if (!supabase) {
+      setError("Supabase no configurado");
+      setLoading(false);
+      return;
+    }
 
-    // TODO: Conectar a Supabase cuando el backend esté listo
-    // const { data, error } = await supabase.from("products").select("*");
+    const fetchProducts = async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, name, price_bs, price_usd, price_cashea, image_url, created_at, category:categories(name)")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        setError(error.message);
+        setLoading(false);
+        return;
+      }
+
+      setProducts((data as unknown as Product[]) || []);
+      setLoading(false);
+    };
+
+    fetchProducts();
   }, [supabase]);
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-blue"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-brand-black">Productos</h1>
+            <p className="text-gray-600">Gestiona el catálogo de productos</p>
+          </div>
+        </div>
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-700 text-sm">{error}</p>
+        </div>
       </div>
     );
   }
@@ -100,35 +103,41 @@ export default function ProductsPage() {
               <tr key={product.id}>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
-                    <img
-                      src={product.image_url}
-                      alt={product.name}
-                      className="w-10 h-10 rounded-lg object-cover bg-gray-100"
-                    />
+                    {product.image_url ? (
+                      <img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="w-10 h-10 rounded-lg object-cover bg-gray-100"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 text-xs">
+                        N/A
+                      </div>
+                    )}
                     <div>
                       <p className="font-medium text-brand-black">{product.name}</p>
-                      <p className="text-xs text-gray-500">#{product.id}</p>
+                      <p className="text-xs text-gray-500">#{product.id.slice(0, 8)}</p>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4">
                   <span className="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">
-                    {product.category}
+                    {product.category?.name || "Sin categoría"}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
                   <span className="font-medium text-brand-black">
-                    Bs. {product.price_bs.toLocaleString()}
+                    Bs. {Number(product.price_bs).toFixed(2)}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
                   <span className="font-medium text-gray-700">
-                    ${product.price_usd.toLocaleString()}
+                    {product.price_usd != null ? `$${Number(product.price_usd).toFixed(2)}` : "—"}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
                   <span className="font-medium text-gray-700">
-                    ${product.price_cashea.toLocaleString()}
+                    {product.price_cashea != null ? `$${Number(product.price_cashea).toFixed(2)}` : "—"}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">

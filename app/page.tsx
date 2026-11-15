@@ -1,94 +1,70 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import BrandSwitch from "@/components/BrandSwitch";
 import HeroBanner from "@/components/HeroBanner";
 import CategoryCard from "@/components/CategoryCard";
 import ProductCard, { type Currency } from "@/components/ProductCard";
+import { createClient } from "@/lib/supabase";
 
-const CATEGORIES = [
-  { name: "Cafeteras", image: "/images/categories/cafeteras.png" },
-  { name: "Cocinas", image: "/images/categories/cocinas.png" },
-  { name: "Lavadoras", image: "/images/categories/lavadoras.png" },
-  { name: "Licuadoras", image: "/images/categories/licuadoras.png" },
-  { name: "Neveras", image: "/images/categories/neveras.png" },
-];
+interface Category {
+  id: string;
+  name: string;
+  icon_url: string | null;
+}
 
-const POPULAR_PRODUCTS = [
-  {
-    id: "1",
-    name: "Funda magnética",
-    price: 13.49,
-    oldPrice: 18.99,
-    image: "/images/products/magnetic-case.png",
-    rating: 5,
-  },
-  {
-    id: "2",
-    name: "UCOMX Nano 3 en 1",
-    price: 39.99,
-    oldPrice: 49.99,
-    image: "/images/products/ucomx-nano.png",
-    rating: 5,
-  },
-  {
-    id: "3",
-    name: "NB Fresh Foam",
-    price: 71.99,
-    oldPrice: 89.99,
-    image: "/images/products/nb-fresh-foam.png",
-    rating: 4,
-  },
-  {
-    id: "4",
-    name: "Bose QuietComfort",
-    price: 379.00,
-    oldPrice: 429.00,
-    image: "/images/products/bose-quietcomfort.png",
-    rating: 5,
-  },
-  {
-    id: "5",
-    name: "Bocina BUGANI BT",
-    price: 59.93,
-    oldPrice: 79.08,
-    image: "/images/products/bugani-speaker.png",
-    rating: 4,
-  },
-  {
-    id: "6",
-    name: "Galaxy Tab A9+",
-    price: 169.99,
-    oldPrice: 209.00,
-    image: "/images/products/galaxy-tab.png",
-    rating: 5,
-  },
-  {
-    id: "7",
-    name: "Acer Aspire 1",
-    price: 228.27,
-    oldPrice: 269.00,
-    image: "/images/products/acer-aspire.png",
-    rating: 4,
-  },
-  {
-    id: "8",
-    name: "Redragon M810",
-    price: 32.99,
-    oldPrice: 49.99,
-    image: "/images/products/redragon-m810.png",
-    rating: 5,
-  },
-];
+interface DbProduct {
+  id: string;
+  name: string;
+  price_bs: number;
+  price_usd: number | null;
+  price_cashea: number | null;
+  image_url: string | null;
+  category: { name: string } | null;
+}
 
 export default function Home() {
   const searchParams = useSearchParams();
   const payment = (searchParams.get("payment") as string) || "bolivares";
+  const supabase = createClient();
 
-  const paymentLabels: Record<string, string> = {
-    bolivares: "Bs.",
-    dolar: "USD",
-    cashea: "Cashea",
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [products, setProducts] = useState<DbProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchData = async () => {
+      const [catRes, prodRes] = await Promise.all([
+        supabase
+          .from("categories")
+          .select("id, name, icon_url")
+          .order("name", { ascending: true }),
+        supabase
+          .from("products")
+          .select("id, name, price_bs, price_usd, price_cashea, image_url, category:categories(name)")
+          .eq("is_active", true)
+          .order("created_at", { ascending: false })
+          .limit(8),
+      ]);
+
+      if (catRes.data) setCategories(catRes.data);
+      if (prodRes.data) setProducts(prodRes.data as unknown as DbProduct[]);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [supabase]);
+
+  const getPrice = (product: DbProduct): number => {
+    if (payment === "dolar") return Number(product.price_usd ?? product.price_bs);
+    if (payment === "cashea") return Number(product.price_cashea ?? product.price_bs);
+    return Number(product.price_bs);
   };
 
   return (
@@ -96,6 +72,7 @@ export default function Home() {
       <BrandSwitch />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <HeroBanner />
+
         <section className="mt-12">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-brand-black">Categorías destacadas</h2>
@@ -103,11 +80,28 @@ export default function Home() {
               Ver más →
             </a>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {CATEGORIES.map((cat) => (
-              <CategoryCard key={cat.name} {...cat} href="#/" />
-            ))}
-          </div>
+          {loading ? (
+            <div className="text-center text-gray-500 py-8">Cargando categorías...</div>
+          ) : categories.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              {categories.map((cat) => (
+                <CategoryCard
+                  key={cat.id}
+                  name={cat.name}
+                  image={
+                    cat.icon_url
+                      ? cat.icon_url.startsWith("http")
+                        ? cat.icon_url
+                        : `/images/categories/${cat.icon_url}`
+                      : "/images/categories/cafeteras.png"
+                  }
+                  href={`/categoria/${cat.id}`}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-gray-500 py-8">No hay categorías todavía.</div>
+          )}
         </section>
 
         <section className="mt-16">
@@ -117,16 +111,25 @@ export default function Home() {
               Ver más →
             </a>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-6">
-            {POPULAR_PRODUCTS.map((product) => (
-              <ProductCard
-                key={product.id}
-                {...product}
-                currency={payment as Currency}
-                href="#/"
-              />
-            ))}
-          </div>
+          {loading ? (
+            <div className="text-center text-gray-500 py-8">Cargando productos...</div>
+          ) : products.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-6">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  name={product.name}
+                  price={getPrice(product)}
+                  image={product.image_url || "/images/categories/cafeteras.png"}
+                  currency={payment as Currency}
+                  href="#/"
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-gray-500 py-8">No hay productos todavía.</div>
+          )}
         </section>
       </main>
     </div>
