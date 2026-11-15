@@ -19,7 +19,7 @@ export default function LoginPage() {
 
     // Si Supabase no está configurado, permitir acceso directo (modo dev)
     if (!supabase) {
-      router.push("/admin");
+      router.push("/admin/products");
       return;
     }
 
@@ -34,7 +34,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/admin");
+    router.push("/admin/products");
   };
 
   return (

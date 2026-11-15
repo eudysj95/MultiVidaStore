@@ -1,13 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #e8f4fb;
   --foreground: #171717;
 
   /* Colores de marca MultiVidaStore (logo del dueño) */
   --brand-blue: #0077BE;
   --brand-black: #000000;
   --brand-white: #ffffff;
+  --brand-bg: #e8f4fb;
   --brand-accent-red: #d90429;
   --brand-accent-green: #4caf50;
   --brand-accent-blue-royal: #1e3a8a;
@@ -19,18 +20,12 @@
   --color-brand-blue: var(--brand-blue);
   --color-brand-black: var(--brand-black);
   --color-brand-white: var(--brand-white);
+  --color-brand-bg: var(--brand-bg);
   --color-brand-accent-red: var(--brand-accent-red);
   --color-brand-accent-green: var(--brand-accent-green);
   --color-brand-accent-blue-royal: var(--brand-accent-blue-royal);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {

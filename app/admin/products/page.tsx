@@ -47,6 +47,25 @@ export default function ProductsPage() {
     fetchProducts();
   }, [supabase]);
 
+  const handleDelete = async (product: Product) => {
+    if (!supabase) return;
+    if (
+      !window.confirm(
+        `¿Eliminar "${product.name}"? Esta acción no se puede deshacer.`
+      )
+    ) {
+      return;
+    }
+
+    const { error } = await supabase.from("products").delete().eq("id", product.id);
+    if (error) {
+      alert("Error al eliminar: " + error.message);
+      return;
+    }
+
+    setProducts((prev) => prev.filter((p) => p.id !== product.id));
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -149,16 +168,7 @@ export default function ProductsPage() {
                       Editar
                     </Link>
                     <button
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            `¿Eliminar "${product.name}"? Esta acción no se puede deshacer.`
-                          )
-                        ) {
-                          // TODO: Implementar eliminación
-                          alert("Función de eliminación pendiente de backend");
-                        }
-                      }}
+                      onClick={() => handleDelete(product)}
                       className="text-red-600 hover:text-red-700 text-sm font-medium"
                     >
                       Eliminar

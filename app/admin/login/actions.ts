@@ -8,7 +8,7 @@ export async function signIn(formData: FormData) {
 
   // Si Supabase no está configurado, redirigimos al panel inmediatamente
   if (!supabase) {
-redirect("/admin/products");
+    redirect("/admin/products");
   }
 
   const email = formData.get("email") as string;
@@ -20,5 +20,5 @@ redirect("/admin/products");
     redirect("/admin/login?error=" + encodeURIComponent(error.message));
   }
 
-  redirect("/admin");
+  redirect("/admin/products");
 }

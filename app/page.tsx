@@ -68,8 +68,10 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <BrandSwitch />
+    <div className="min-h-screen bg-brand-bg">
+      <div className="flex justify-center pt-6">
+        <BrandSwitch />
+      </div>
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <HeroBanner />
 

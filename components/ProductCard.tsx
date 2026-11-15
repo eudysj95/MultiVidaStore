@@ -41,6 +41,11 @@ export default function ProductCard({
     "bolivares") as Currency;
   const symbol = CURRENCY_SYMBOLS[currency];
 
+  const imageSrc =
+    image && (image.startsWith("https://") || image.startsWith("/"))
+      ? image
+      : "/images/categories/cafeteras.png";
+
   // ⚠️ Reemplazá este número por el WhatsApp real del dueño
   const whatsappNumber = "584246187569";
   const [productLink, setProductLink] = useState("");
@@ -50,7 +55,7 @@ export default function ProductCard({
     setProductLink(window.location.href);
   }, []);
 
-  const message = `Hola, me interesa el producto "${name}" a ${symbol} ${price.toLocaleString()}. Link: ${productLink}`;
+  const message = `Hola, me interesa el producto "${name}" a ${symbol} ${price.toFixed(2)}. Link: ${productLink}`;
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
   const stars = Array.from({ length: 5 }, (_, i) => i < rating);
@@ -60,7 +65,7 @@ export default function ProductCard({
       <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
         <div className="relative aspect-square bg-gray-50 overflow-hidden">
           <Image
-            src={image}
+            src={imageSrc}
             alt={name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             fill
@@ -99,7 +104,7 @@ export default function ProductCard({
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full py-2 px-4 bg-brand-green text-white text-center text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
+              className="w-full py-2 px-4 bg-brand-accent-green text-white text-center text-sm font-medium rounded-lg hover:bg-brand-accent-green/90 transition-colors"
             >
               Consultar por WhatsApp
             </a>

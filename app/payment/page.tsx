@@ -33,7 +33,7 @@ export default function PaymentSelection() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-brand-bg px-4">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white shadow">
