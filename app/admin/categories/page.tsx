@@ -10,6 +10,12 @@ interface Category {
   product_count: number;
 }
 
+interface CategoryRow {
+  id: string;
+  name: string;
+  products: { count: number }[] | null;
+}
+
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,7 +32,7 @@ export default function CategoriesPage() {
     const fetchCategories = async () => {
       const { data, error } = await supabase
         .from("categories")
-        .select("id, name, product_count")
+        .select("id, name, products(count)")
         .order("name", { ascending: true });
 
       if (error) {
@@ -35,12 +41,57 @@ export default function CategoriesPage() {
         return;
       }
 
-      setCategories(data || []);
+      const mapped: Category[] = ((data as unknown as CategoryRow[]) || []).map(
+        (row) => ({
+          id: row.id,
+          name: row.name,
+          product_count: row.products?.[0]?.count ?? 0,
+        })
+      );
+
+      setCategories(mapped);
       setLoading(false);
     };
 
     fetchCategories();
   }, [supabase]);
+
+  const handleDelete = async (category: Category) => {
+    if (!supabase) return;
+
+    if (category.product_count > 0) {
+      alert(
+        `La categoría "${category.name}" tiene ${category.product_count} producto(s). Reasigná o eliminá esos productos antes de borrar la categoría.`
+      );
+      return;
+    }
+
+    if (
+      !window.confirm(
+        `¿Eliminar la categoría "${category.name}"? Esta acción no se puede deshacer.`
+      )
+    ) {
+      return;
+    }
+
+    const { error } = await supabase
+      .from("categories")
+      .delete()
+      .eq("id", category.id);
+
+    if (error) {
+      alert(
+        "Error al eliminar: " +
+          error.message +
+          (error.message.toLowerCase().includes("foreign key")
+            ? "\n\nLa categoría tiene productos asociados. Eliminá o reasigná esos productos primero."
+            : "")
+      );
+      return;
+    }
+
+    setCategories((prev) => prev.filter((c) => c.id !== category.id));
+  };
 
   const header = (
     <div className="flex justify-between items-center mb-8">
@@ -49,7 +100,7 @@ export default function CategoriesPage() {
         <p className="text-gray-600">Gestiona las categorías de productos</p>
       </div>
       <Link
-        href="#"
+        href="/admin/categories/new"
         className="bg-brand-blue text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-blue/90 transition-colors"
       >
         + Nueva categoría
@@ -100,14 +151,17 @@ export default function CategoriesPage() {
                   {cat.product_count}
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-end gap-2">
                     <Link
-                      href="#"
+                      href={`/admin/categories/${cat.id}/edit`}
                       className="text-brand-blue hover:text-brand-blue/90 text-sm font-medium"
                     >
                       Editar
                     </Link>
-                    <button className="text-red-600 hover:text-red-700 text-sm font-medium">
+                    <button
+                      onClick={() => handleDelete(cat)}
+                      className="text-red-600 hover:text-red-700 text-sm font-medium"
+                    >
                       Eliminar
                     </button>
                   </div>

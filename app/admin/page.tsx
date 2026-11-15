@@ -79,6 +79,14 @@ export default async function AdminPage() {
     redirect("/admin/login");
   }
 
+  const [productsResult, categoriesResult] = await Promise.all([
+    supabase.from("products").select("*", { count: "exact", head: true }),
+    supabase.from("categories").select("*", { count: "exact", head: true }),
+  ]);
+
+  const productCount = productsResult.count ?? 0;
+  const categoryCount = categoriesResult.count ?? 0;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center mb-8">
@@ -97,15 +105,18 @@ export default async function AdminPage() {
         {/* Tarjetas de resumen */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Productos</h3>
-          <p className="text-3xl font-bold text-brand-black mt-2">—</p>
+          <p className="text-3xl font-bold text-brand-black mt-2">{productCount}</p>
+          <p className="text-xs text-gray-400 mt-1">En el catálogo</p>
         </div>
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Ventas hoy</h3>
           <p className="text-3xl font-bold text-brand-black mt-2">—</p>
+          <p className="text-xs text-gray-400 mt-1">Sin registro de ventas</p>
         </div>
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Categorías</h3>
-          <p className="text-3xl font-bold text-brand-black mt-2">—</p>
+          <p className="text-3xl font-bold text-brand-black mt-2">{categoryCount}</p>
+          <p className="text-xs text-gray-400 mt-1">Activas en la tienda</p>
         </div>
       </div>
 

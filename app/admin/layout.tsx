@@ -59,10 +59,10 @@ export default function AdminLayout({
         <nav className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between h-16 items-center">
-              <div className="flex items-center gap-2">
+              <Link href="/admin" className="flex items-center gap-2">
                 <span className="font-bold text-brand-black text-lg">MultiVida Store</span>
                 <span className="text-xs text-gray-400 uppercase tracking-wider">Admin</span>
-              </div>
+              </Link>
               <div className="flex items-center gap-4">
                 <Link
                   href="/admin/products"
@@ -93,10 +93,10 @@ export default function AdminLayout({
         <nav className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between h-16 items-center">
-              <div className="flex items-center gap-2">
+              <Link href="/admin" className="flex items-center gap-2">
                 <span className="font-bold text-brand-black text-lg">MultiVida Store</span>
                 <span className="text-xs text-gray-400 uppercase tracking-wider">Admin</span>
-              </div>
+              </Link>
               <div className="flex items-center gap-4">
                 <Link
                   href="/admin/products"
