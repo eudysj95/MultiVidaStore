@@ -125,7 +125,7 @@ export default function Home() {
                   price={getPrice(product)}
                   image={product.image_url || "/images/categories/cafeteras.png"}
                   currency={payment as Currency}
-                  href="#/"
+                  href={`/producto/${product.id}`}
                 />
               ))}
             </div>

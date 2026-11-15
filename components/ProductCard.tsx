@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
@@ -59,37 +60,38 @@ export default function ProductCard({
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
   const stars = Array.from({ length: 5 }, (_, i) => i < rating);
+  const productHref = href || `/producto/${id}`;
 
   return (
-    <div className="block cursor-pointer hover:shadow-lg transition-shadow">
+    <div className="group block hover:shadow-lg transition-shadow">
       <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
-        <div className="relative aspect-square bg-gray-50 overflow-hidden">
-          <Image
-            src={imageSrc}
-            alt={name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          />
-          {oldPrice && (
-            <span className="absolute top-2 right-2 bg-brand-black text-white text-xs font-bold px-2 py-1 rounded-md">
-              -{Math.round(((oldPrice - price) / oldPrice) * 100)}%
-            </span>
-          )}
-        </div>
-        <div className="p-4 flex flex-col flex-1">
-          <div className="flex items-center gap-1 mb-1">
-            {stars.map((_, i) => (
-              <span key={i} className="text-yellow-400 text-xs">
-                ★
+        <Link href={productHref} className="block flex-1">
+          <div className="relative aspect-square bg-gray-50 overflow-hidden">
+            <Image
+              src={imageSrc}
+              alt={name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            />
+            {oldPrice && (
+              <span className="absolute top-2 right-2 bg-brand-black text-white text-xs font-bold px-2 py-1 rounded-md">
+                -{Math.round(((oldPrice - price) / oldPrice) * 100)}%
               </span>
-            ))}
-            <span className="text-xs text-gray-500 ml-1">(128 reseñas)</span>
+            )}
           </div>
-          <h3 className="font-semibold text-brand-black text-sm leading-tight line-clamp-2 mb-2">
-            {name}
-          </h3>
-          <div className="mt-auto flex flex-col gap-2">
+          <div className="p-4 pb-2">
+            <div className="flex items-center gap-1 mb-1">
+              {stars.map((_, i) => (
+                <span key={i} className="text-yellow-400 text-xs">
+                  ★
+                </span>
+              ))}
+              <span className="text-xs text-gray-500 ml-1">(128 reseñas)</span>
+            </div>
+            <h3 className="font-semibold text-brand-black text-sm leading-tight line-clamp-2 mb-2">
+              {name}
+            </h3>
             <div className="flex items-baseline gap-2">
               <span className="font-bold text-brand-blue text-lg">
                 {symbol} {price.toFixed(2)}
@@ -100,15 +102,17 @@ export default function ProductCard({
                 </span>
               )}
             </div>
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full py-2 px-4 bg-brand-accent-green text-white text-center text-sm font-medium rounded-lg hover:bg-brand-accent-green/90 transition-colors"
-            >
-              Consultar por WhatsApp
-            </a>
           </div>
+        </Link>
+        <div className="p-4 pt-0">
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full py-2 px-4 bg-brand-accent-green text-white text-center text-sm font-medium rounded-lg hover:bg-brand-accent-green/90 transition-colors"
+          >
+            Consultar por WhatsApp
+          </a>
         </div>
       </div>
     </div>
