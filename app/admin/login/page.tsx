@@ -1,16 +1,24 @@
 "use client";
 
 import { createClient } from "@/lib/supabase";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
   const supabase = createClient();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (searchParams.get("error") === "unauthorized") {
+      setError("Tu cuenta no tiene permisos de administrador.");
+      supabase?.auth.signOut();
+    }
+  }, [searchParams, supabase]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
