@@ -21,7 +21,6 @@ interface ProductCardProps {
   price: number;
   oldPrice?: number;
   image: string;
-  rating?: number;
   href?: string;
   currency?: Currency;
 }
@@ -32,7 +31,6 @@ export default function ProductCard({
   price,
   oldPrice,
   image,
-  rating = 5,
   href,
   currency: currencyProp,
 }: ProductCardProps) {
@@ -59,7 +57,6 @@ export default function ProductCard({
   const message = `Hola, me interesa el producto "${name}" a ${symbol} ${price.toFixed(2)}. Link: ${productLink}`;
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
-  const stars = Array.from({ length: 5 }, (_, i) => i < rating);
   const productHref = href || `/producto/${id}`;
 
   return (
@@ -81,14 +78,6 @@ export default function ProductCard({
             )}
           </div>
           <div className="p-4 pb-2">
-            <div className="flex items-center gap-1 mb-1">
-              {stars.map((_, i) => (
-                <span key={i} className="text-yellow-400 text-xs">
-                  ★
-                </span>
-              ))}
-              <span className="text-xs text-gray-500 ml-1">(128 reseñas)</span>
-            </div>
             <h3 className="font-semibold text-brand-black text-sm leading-tight line-clamp-2 mb-2">
               {name}
             </h3>

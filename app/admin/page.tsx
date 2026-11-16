@@ -101,17 +101,12 @@ export default async function AdminPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Tarjetas de resumen */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Productos</h3>
           <p className="text-3xl font-bold text-brand-black mt-2">{productCount}</p>
           <p className="text-xs text-gray-400 mt-1">En el catálogo</p>
-        </div>
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Ventas hoy</h3>
-          <p className="text-3xl font-bold text-brand-black mt-2">—</p>
-          <p className="text-xs text-gray-400 mt-1">Sin registro de ventas</p>
         </div>
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Categorías</h3>

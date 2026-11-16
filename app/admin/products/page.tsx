@@ -105,7 +105,7 @@ export default function ProductsPage() {
         </Link>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-x-auto">
         <table className="w-full text-left">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
@@ -160,7 +160,15 @@ export default function ProductsPage() {
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-end gap-2 whitespace-nowrap">
+                    <Link
+                      href={`/producto/${product.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-2 py-1 rounded-md border border-gray-200 text-gray-700 text-xs font-medium hover:bg-gray-50 transition-colors"
+                    >
+                      Ver
+                    </Link>
                     <Link
                       href={`/admin/products/${product.id}/edit`}
                       className="text-brand-blue hover:text-brand-blue/90 text-sm font-medium"
