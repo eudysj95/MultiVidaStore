@@ -6,7 +6,7 @@ export default function HeroBanner() {
       <Image
         src="/images/logo.jpeg"
         alt="MultiVida Store"
-        className="w-full h-auto object-contain"
+        className="w-full h-auto object-contain rounded-2xl"
         width={1280}
         height={321}
         loading="eager"

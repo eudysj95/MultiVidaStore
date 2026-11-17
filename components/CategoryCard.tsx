@@ -7,13 +7,21 @@ interface CategoryCardProps {
   name: string;
   image: string;
   href: string;
+  className?: string;
+  imageClassName?: string;
 }
 
-export default function CategoryCard({ name, image, href }: CategoryCardProps) {
+export default function CategoryCard({
+  name,
+  image,
+  href,
+  className = "",
+  imageClassName = "aspect-square",
+}: CategoryCardProps) {
   return (
-    <Link href={href} className="block">
-      <div className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-        <div className="relative aspect-square bg-gray-50 overflow-hidden">
+    <Link href={href} className={`block ${className}`}>
+      <div className="group h-full bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+        <div className={`relative bg-gray-50 overflow-hidden ${imageClassName}`}>
           <Image
             src={image}
             alt={name}

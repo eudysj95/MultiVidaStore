@@ -104,26 +104,40 @@ export default function Home() {
           </button>
         </form>
 
-        <section className="mt-12">
-          <h2 className="text-2xl font-bold text-brand-black mb-6">Categorías destacadas</h2>
+        <section className="mt-12 rounded-3xl bg-slate-100 p-4 sm:p-6">
+          <h2 className="text-2xl font-bold text-brand-black mb-6">Categorías</h2>
           {loading ? (
             <div className="text-center text-gray-500 py-8">Cargando categorías...</div>
           ) : categories.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              {categories.map((cat) => (
-                <CategoryCard
-                  key={cat.id}
-                  name={cat.name}
-                  image={
-                    cat.icon_url
-                      ? cat.icon_url.startsWith("http")
-                        ? cat.icon_url
-                        : `/images/categories/${cat.icon_url}`
-                      : "/images/categories/cafeteras.png"
-                  }
-                  href={`/categoria/${cat.id}`}
-                />
-              ))}
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              {categories.map((cat, index) => {
+                const isWide = index === 2;
+                const isWideDesktop = index === 3 || index === 4;
+                return (
+                  <CategoryCard
+                    key={cat.id}
+                    name={cat.name}
+                    image={
+                      cat.icon_url
+                        ? cat.icon_url.startsWith("http")
+                          ? cat.icon_url
+                          : `/images/categories/${cat.icon_url}`
+                        : "/images/categories/cafeteras.png"
+                    }
+                    href={`/categoria/${cat.id}`}
+                    className={`${isWide ? "col-span-2" : ""} ${
+                      isWideDesktop ? "md:col-span-2" : ""
+                    }`}
+                    imageClassName={
+                      isWide
+                        ? "aspect-[2/1]"
+                        : isWideDesktop
+                          ? "aspect-square md:aspect-[2/1]"
+                          : "aspect-square"
+                    }
+                  />
+                );
+              })}
             </div>
           ) : (
             <div className="text-center text-gray-500 py-8">No hay categorías todavía.</div>

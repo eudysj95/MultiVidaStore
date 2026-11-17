@@ -40,7 +40,7 @@ export default function PaymentSelection() {
             <img
               src="/images/logo.jpeg"
               alt="MultiVida Store"
-              className="h-12 w-12 object-contain"
+              className="h-12 w-12 object-contain rounded-lg"
             />
           </div>
           <h1 className="mt-6 text-3xl font-extrabold text-brand-black tracking-tight sm:text-4xl">

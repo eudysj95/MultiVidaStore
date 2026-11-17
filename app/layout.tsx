@@ -14,8 +14,53 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MultiVida Store",
-  description: "Electrodomésticos y tecnología al mejor precio. Consulta tus productos por WhatsApp.",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
+  ),
+  title: {
+    default: "MultiVida Store",
+    template: "%s | MultiVida Store",
+  },
+  description:
+    "Electrodomésticos y tecnología al mejor precio. Consulta tus productos por WhatsApp.",
+  keywords: [
+    "electrodomésticos",
+    "tecnología",
+    "MultiVida Store",
+    "Venezuela",
+    "cocinas",
+    "neveras",
+    "lavadoras",
+    "licuadoras",
+    "cafeteras",
+  ],
+  openGraph: {
+    type: "website",
+    locale: "es_VE",
+    siteName: "MultiVida Store",
+    title: "MultiVida Store",
+    description:
+      "Electrodomésticos y tecnología al mejor precio. Consulta tus productos por WhatsApp.",
+    images: [
+      {
+        url: "/images/logo.jpeg",
+        width: 1280,
+        height: 321,
+        alt: "MultiVida Store",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MultiVida Store",
+    description:
+      "Electrodomésticos y tecnología al mejor precio. Consulta tus productos por WhatsApp.",
+    images: ["/images/logo.jpeg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
