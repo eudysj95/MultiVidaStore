@@ -22,7 +22,7 @@ begin
     from pg_policies
     where schemaname = 'public'
       and tablename = 'products'
-      and cmd in ('INSERT', 'UPDATE', 'DELETE')
+      and cmd in ('INSERT', 'UPDATE', 'DELETE', 'ALL')
   loop
     execute format('drop policy if exists %I on public.products', pol.policyname);
   end loop;
@@ -57,7 +57,7 @@ begin
     from pg_policies
     where schemaname = 'public'
       and tablename = 'categories'
-      and cmd in ('INSERT', 'UPDATE', 'DELETE')
+      and cmd in ('INSERT', 'UPDATE', 'DELETE', 'ALL')
   loop
     execute format('drop policy if exists %I on public.categories', pol.policyname);
   end loop;
@@ -123,5 +123,5 @@ select schemaname, tablename, policyname, cmd
 from pg_policies
 where schemaname = 'public'
   and tablename in ('products', 'categories')
-  and cmd in ('INSERT', 'UPDATE', 'DELETE')
+  and cmd in ('INSERT', 'UPDATE', 'DELETE', 'ALL')
 order by tablename, cmd;
