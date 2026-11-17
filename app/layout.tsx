@@ -43,9 +43,9 @@ export const metadata: Metadata = {
       "Electrodomésticos y tecnología al mejor precio. Consulta tus productos por WhatsApp.",
     images: [
       {
-        url: "/images/logo.jpeg",
-        width: 1280,
-        height: 321,
+        url: "/images/logo.png",
+        width: 727,
+        height: 343,
         alt: "MultiVida Store",
       },
     ],
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     title: "MultiVida Store",
     description:
       "Electrodomésticos y tecnología al mejor precio. Consulta tus productos por WhatsApp.",
-    images: ["/images/logo.jpeg"],
+    images: ["/images/logo.png"],
   },
   robots: {
     index: true,

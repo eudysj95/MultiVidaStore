@@ -109,10 +109,9 @@ export default function Home() {
           {loading ? (
             <div className="text-center text-gray-500 py-8">Cargando categorías...</div>
           ) : categories.length > 0 ? (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4">
               {categories.map((cat, index) => {
-                const isWide = index === 2;
-                const isWideDesktop = index === 3 || index === 4;
+                const isWide = index % 5 === 0;
                 return (
                   <CategoryCard
                     key={cat.id}
@@ -125,16 +124,8 @@ export default function Home() {
                         : "/images/categories/cafeteras.png"
                     }
                     href={`/categoria/${cat.id}`}
-                    className={`${isWide ? "col-span-2" : ""} ${
-                      isWideDesktop ? "md:col-span-2" : ""
-                    }`}
-                    imageClassName={
-                      isWide
-                        ? "aspect-[2/1]"
-                        : isWideDesktop
-                          ? "aspect-square md:aspect-[2/1]"
-                          : "aspect-square"
-                    }
+                    className={isWide ? "col-span-2" : ""}
+                    imageClassName={isWide ? "aspect-[2/1]" : "aspect-square"}
                   />
                 );
               })}

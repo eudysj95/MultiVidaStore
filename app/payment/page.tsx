@@ -38,7 +38,7 @@ export default function PaymentSelection() {
         <div className="text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white shadow">
             <img
-              src="/images/logo.jpeg"
+              src="/images/logo.png"
               alt="MultiVida Store"
               className="h-12 w-12 object-contain rounded-lg"
             />
