@@ -15,11 +15,16 @@ interface Product {
   created_at: string;
 }
 
+const PAGE_SIZE = 50;
+
 export default function ProductsPage() {
   const supabase = createClient();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (!supabase) {
@@ -29,10 +34,18 @@ export default function ProductsPage() {
     }
 
     const fetchProducts = async () => {
-      const { data, error } = await supabase
+      setLoading(true);
+      setError(null);
+      const from = (page - 1) * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+      const { data, error, count } = await supabase
         .from("products")
-        .select("id, name, price_bs, price_usd, price_cashea, image_url, created_at, category:categories(name)")
-        .order("created_at", { ascending: false });
+        .select(
+          "id, name, price_bs, price_usd, price_cashea, image_url, created_at, category:categories(name)",
+          { count: "exact" }
+        )
+        .order("created_at", { ascending: false })
+        .range(from, to);
 
       if (error) {
         setError(error.message);
@@ -41,11 +54,12 @@ export default function ProductsPage() {
       }
 
       setProducts((data as unknown as Product[]) || []);
+      setTotal(count ?? 0);
       setLoading(false);
     };
 
     fetchProducts();
-  }, [supabase]);
+  }, [supabase, page, reloadKey]);
 
   const handleDelete = async (product: Product) => {
     if (!supabase) return;
@@ -63,8 +77,16 @@ export default function ProductsPage() {
       return;
     }
 
-    setProducts((prev) => prev.filter((p) => p.id !== product.id));
+    const newTotal = Math.max(0, total - 1);
+    const newTotalPages = Math.max(1, Math.ceil(newTotal / PAGE_SIZE));
+    if (page > newTotalPages) {
+      setPage(newTotalPages);
+    } else {
+      setReloadKey((key) => key + 1);
+    }
   };
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   if (loading) {
     return (
@@ -80,7 +102,9 @@ export default function ProductsPage() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-2xl font-bold text-brand-black">Productos</h1>
-            <p className="text-gray-600">Gestiona el catálogo de productos</p>
+            <p className="text-gray-600">
+              Gestiona el catálogo de productos · {total} en total
+            </p>
           </div>
         </div>
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
@@ -189,9 +213,37 @@ export default function ProductsPage() {
         </table>
       </div>
 
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-6">
+        <p className="text-sm text-gray-600">
+          Página {page} de {totalPages} · {total} productos
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setPage((current) => Math.max(1, current - 1))}
+            disabled={page <= 1}
+            className="px-3 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Anterior
+          </button>
+          <button
+            onClick={() =>
+              setPage((current) => Math.min(totalPages, current + 1))
+            }
+            disabled={page >= totalPages}
+            className="px-3 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+
       {products.length === 0 && (
         <div className="mt-8 text-center text-gray-500">
-          <p>No hay productos todavía.</p>
+          <p>
+            {total === 0
+              ? "No hay productos todavía."
+              : "No hay productos en esta página."}
+          </p>
         </div>
       )}
     </div>

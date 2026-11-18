@@ -60,8 +60,8 @@ export default function ProductCard({
   const productHref = href || `/producto/${id}`;
 
   return (
-    <div className="group block hover:shadow-lg transition-shadow">
-      <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+    <div className="group block">
+      <div className="bg-brand-bg rounded-2xl overflow-hidden border border-brand-blue/20 hover:border-brand-blue/40 transition-colors flex flex-col h-full">
         <Link href={productHref} className="block flex-1">
           <div className="relative aspect-square bg-gray-50 overflow-hidden">
             <Image

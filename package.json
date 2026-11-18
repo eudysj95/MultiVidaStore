@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "compress-images": "node scripts/compress-images.mjs"
+    "compress-images": "node scripts/compress-images.mjs",
+    "import-products": "node scripts/import-products.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

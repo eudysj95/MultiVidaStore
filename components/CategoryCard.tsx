@@ -20,7 +20,7 @@ export default function CategoryCard({
 }: CategoryCardProps) {
   return (
     <Link href={href} className={`block ${className}`}>
-      <div className="group h-full bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+      <div className="group h-full bg-brand-bg rounded-2xl overflow-hidden border border-brand-blue/20 hover:border-brand-blue/40 transition-colors">
         <div className={`relative bg-gray-50 overflow-hidden ${imageClassName}`}>
           <Image
             src={image}

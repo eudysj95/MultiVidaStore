@@ -17,15 +17,21 @@ interface DbProduct {
   category: { name: string } | null;
 }
 
+const PAGE_SIZE = 24;
+
 export default function SearchPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get("q")?.trim() ?? "";
   const payment = (searchParams.get("payment") as string) || "bolivares";
+  const pageParam = Number(searchParams.get("page") ?? "1");
+  const page =
+    Number.isFinite(pageParam) && pageParam > 0 ? Math.floor(pageParam) : 1;
   const supabase = createClient();
 
   const [input, setInput] = useState(query);
   const [products, setProducts] = useState<DbProduct[]>([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -46,14 +52,17 @@ export default function SearchPage() {
     setLoading(true);
 
     const fetchProducts = async () => {
+      const from = (page - 1) * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
       let request = supabase
         .from("products")
         .select(
-          "id, name, price_bs, price_usd, price_cashea, image_url, category:categories(name)"
+          "id, name, price_bs, price_usd, price_cashea, image_url, category:categories(name)",
+          { count: "exact" }
         )
         .eq("is_active", true)
         .order("created_at", { ascending: false })
-        .limit(50);
+        .range(from, to);
 
       if (safeQuery) {
         request = request.or(
@@ -61,10 +70,11 @@ export default function SearchPage() {
         );
       }
 
-      const { data } = await request;
+      const { data, count } = await request;
 
       if (!cancelled) {
         setProducts((data as unknown as DbProduct[]) || []);
+        setTotal(count ?? 0);
         setLoading(false);
       }
     };
@@ -74,7 +84,7 @@ export default function SearchPage() {
     return () => {
       cancelled = true;
     };
-  }, [supabase, query]);
+  }, [supabase, query, page]);
 
   const getPrice = (product: DbProduct): number => {
     if (payment === "dolar")
@@ -82,6 +92,20 @@ export default function SearchPage() {
     if (payment === "cashea")
       return Number(product.price_cashea ?? product.price_bs);
     return Number(product.price_bs);
+  };
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  const goToPage = (next: number) => {
+    const nextParams = new URLSearchParams(searchParams.toString());
+    if (next <= 1) {
+      nextParams.delete("page");
+    } else {
+      nextParams.set("page", String(next));
+    }
+    const queryString = nextParams.toString();
+    router.push(`/buscar${queryString ? `?${queryString}` : ""}`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -131,18 +155,52 @@ export default function SearchPage() {
             Cargando productos...
           </div>
         ) : products.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-            {products.map((product) => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                name={product.name}
-                price={getPrice(product)}
-                image={product.image_url || "/images/categories/cafeteras.png"}
-                currency={payment as Currency}
-                href={`/producto/${product.id}`}
-              />
-            ))}
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  name={product.name}
+                  price={getPrice(product)}
+                  image={product.image_url || "/images/categories/cafeteras.png"}
+                  currency={payment as Currency}
+                  href={`/producto/${product.id}`}
+                />
+              ))}
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-8">
+              <p className="text-sm text-gray-600">
+                Página {page} de {totalPages} · {total} productos
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => goToPage(page - 1)}
+                  disabled={page <= 1}
+                  className="px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Anterior
+                </button>
+                <button
+                  onClick={() => goToPage(page + 1)}
+                  disabled={page >= totalPages}
+                  className="px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Siguiente
+                </button>
+              </div>
+            </div>
+          </>
+        ) : total > 0 ? (
+          <div className="text-center text-gray-500 py-12">
+            <p>No hay resultados en esta página.</p>
+            <button
+              onClick={() => goToPage(1)}
+              className="mt-2 text-brand-blue font-medium"
+            >
+              Volver a la primera página
+            </button>
           </div>
         ) : (
           <div className="text-center text-gray-500 py-12">
