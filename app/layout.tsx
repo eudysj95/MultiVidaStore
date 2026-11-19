@@ -34,6 +34,11 @@ export const metadata: Metadata = {
     "licuadoras",
     "cafeteras",
   ],
+  icons: {
+    icon: "/images/fav.png",
+    shortcut: "/images/fav.png",
+    apple: "/images/fav.png",
+  },
   openGraph: {
     type: "website",
     locale: "es_VE",
