@@ -4,6 +4,7 @@
  *
  * Uso:
  *   pnpm import-products --csv ./productos.csv --images ./imagenes
+ *   pnpm import-products --csv ./productos.csv --images ./imagenes --remove-bg
  *
  * Requiere en .env.local:
  *   NEXT_PUBLIC_SUPABASE_URL=...
@@ -17,13 +18,19 @@
  * La columna "imagen" debe tener el nombre del archivo dentro de --images.
  * Las imágenes se comprimen a WebP (máx 1200px, calidad 80) y se suben
  * al bucket "product-images" de Supabase Storage.
+ * Con --remove-bg se quita el fondo con rembg (modelo u2net por defecto).
  */
 
 import { createClient } from "@supabase/supabase-js";
 import sharp from "sharp";
-import { readFile, stat } from "node:fs/promises";
+import { execFile } from "node:child_process";
+import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
+import { promisify } from "node:util";
+import os from "node:os";
 import path from "node:path";
 import crypto from "node:crypto";
+
+const execFileAsync = promisify(execFile);
 
 const BUCKET = "product-images";
 const MAX_WIDTH = 1200;
@@ -43,6 +50,9 @@ const imagesDir = args.images;
 const dryRun = Boolean(args["dry-run"]);
 const createCategories = Boolean(args["create-categories"]);
 const allowDuplicates = Boolean(args["allow-duplicates"]);
+const removeBg = Boolean(args["remove-bg"]);
+const bgModel = args["bg-model"] || "u2net";
+const rembgBin = process.env.REMBG_BIN || "rembg";
 const delimiter = args.delimiter || null;
 const bucket = args.bucket || BUCKET;
 
@@ -92,6 +102,19 @@ if (!supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
+
+if (removeBg && !dryRun) {
+  try {
+    await execFileAsync(rembgBin, ["--help"], { timeout: 15000 });
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      console.error(
+        `No se encontró "${rembgBin}". Instalá rembg (ej: pipx install "rembg[cpu,cli]") o definí REMBG_BIN.`
+      );
+      process.exit(1);
+    }
+  }
+}
 
 // ---------- CSV ----------
 
@@ -331,7 +354,8 @@ function parseArgs(argv) {
       key === "help" ||
       key === "dry-run" ||
       key === "create-categories" ||
-      key === "allow-duplicates"
+      key === "allow-duplicates" ||
+      key === "remove-bg"
     ) {
       result[key] = true;
     } else {
@@ -352,6 +376,8 @@ Opciones:
   --dry-run             Valida sin subir ni insertar
   --create-categories   Crea categorías que no existan
   --allow-duplicates    No omite productos ya existentes
+  --remove-bg           Quita el fondo con rembg (modelo u2net por defecto)
+  --bg-model <modelo>   Modelo de rembg (default: u2net; u2netp es más liviano)
   --delimiter <char>    Separador del CSV (default: autodetectar , o ;)
   --bucket <nombre>     Bucket de Storage (default: product-images)
   --help                Muestra esta ayuda
@@ -362,7 +388,10 @@ Columnas del CSV (aliases en español/inglés):
 
 La columna "imagen" debe tener el nombre del archivo dentro de --images.
 Las imágenes se comprimen a WebP (máx ${MAX_WIDTH}px, calidad ${QUALITY})
-y se suben al bucket de Supabase Storage.`);
+y se suben al bucket de Supabase Storage.
+
+Con --remove-bg se requiere rembg instalado (ej: pipx install "rembg[cpu,cli]").
+La primera ejecución descarga el modelo (~176 MB para u2net).`);
 }
 
 async function loadEnvLocal() {
@@ -559,38 +588,77 @@ function resolveImagePath(imagesDir, imageName) {
 }
 
 async function uploadImage(imagePath, imageName, productName, categoryName) {
-  const cached = imageCache.get(imagePath);
+  const bgVariant = removeBg ? `bg-${bgModel}` : "raw";
+  const cacheKey = `${imagePath}|${bgVariant}`;
+  const cached = imageCache.get(cacheKey);
   if (cached) return cached;
 
   const slug = slugify(productName) || "producto";
   const hash = crypto
     .createHash("sha1")
-    .update(`${imageName}|${productName}|${categoryName}`)
+    .update(`${imageName}|${productName}|${categoryName}|${bgVariant}`)
     .digest("hex")
     .slice(0, 12);
   const storagePath = `products/${slug}-${hash}.webp`;
 
-  const buffer = await sharp(imagePath)
-    .rotate()
-    .resize({ width: MAX_WIDTH, withoutEnlargement: true })
-    .webp({ quality: QUALITY })
-    .toBuffer();
+  let cutoutDir = null;
+  let sourcePath = imagePath;
 
-  const { error } = await supabase.storage
-    .from(bucket)
-    .upload(storagePath, buffer, {
-      contentType: "image/webp",
-      cacheControl: "3600",
-      upsert: true,
-    });
-
-  if (error) {
-    throw new Error(`error subiendo imagen: ${error.message}`);
+  if (removeBg) {
+    const cutout = await removeImageBackground(imagePath);
+    cutoutDir = cutout.dir;
+    sourcePath = cutout.output;
   }
 
-  const { data } = supabase.storage.from(bucket).getPublicUrl(storagePath);
-  imageCache.set(imagePath, data.publicUrl);
-  return data.publicUrl;
+  try {
+    const buffer = await sharp(sourcePath)
+      .rotate()
+      .resize({ width: MAX_WIDTH, withoutEnlargement: true })
+      .webp({ quality: QUALITY })
+      .toBuffer();
+
+    const { error } = await supabase.storage
+      .from(bucket)
+      .upload(storagePath, buffer, {
+        contentType: "image/webp",
+        cacheControl: "3600",
+        upsert: true,
+      });
+
+    if (error) {
+      throw new Error(`error subiendo imagen: ${error.message}`);
+    }
+
+    const { data } = supabase.storage.from(bucket).getPublicUrl(storagePath);
+    imageCache.set(cacheKey, data.publicUrl);
+    return data.publicUrl;
+  } finally {
+    if (cutoutDir) {
+      await rm(cutoutDir, { recursive: true, force: true });
+    }
+  }
+}
+
+async function removeImageBackground(imagePath) {
+  const dir = await mkdtemp(path.join(os.tmpdir(), "multivida-bg-"));
+  const output = path.join(dir, "cutout.png");
+
+  try {
+    await execFileAsync(
+      rembgBin,
+      ["i", "-m", bgModel, imagePath, output],
+      { timeout: 900000, maxBuffer: 1024 * 1024 * 10 }
+    );
+    return { dir, output };
+  } catch (error) {
+    await rm(dir, { recursive: true, force: true });
+    const detail = error.stderr
+      ? String(error.stderr).trim()
+      : error.message;
+    throw new Error(
+      `no se pudo quitar el fondo (${rembgBin} -m ${bgModel}): ${detail}`
+    );
+  }
 }
 
 function slugify(value) {

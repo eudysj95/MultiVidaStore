@@ -141,7 +141,7 @@ export default function ProductPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="relative aspect-square bg-white rounded-2xl overflow-hidden border border-gray-100">
+            <div className="relative aspect-square bg-brand-bg rounded-2xl overflow-hidden border border-brand-blue/20">
               <div className="absolute inset-6">
                 <Image
                   src={imageSrc}

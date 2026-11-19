@@ -63,14 +63,16 @@ export default function ProductCard({
     <div className="group block">
       <div className="bg-brand-bg rounded-2xl overflow-hidden border border-brand-blue/20 hover:border-brand-blue/40 transition-colors flex flex-col h-full">
         <Link href={productHref} className="block flex-1">
-          <div className="relative aspect-square bg-gray-50 overflow-hidden">
-            <Image
-              src={imageSrc}
-              alt={name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            />
+          <div className="relative aspect-square bg-transparent overflow-hidden">
+            <div className="absolute inset-4">
+              <Image
+                src={imageSrc}
+                alt={name}
+                className="object-contain group-hover:scale-105 transition-transform duration-300"
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              />
+            </div>
             {oldPrice && (
               <span className="absolute top-2 right-2 bg-brand-black text-white text-xs font-bold px-2 py-1 rounded-md">
                 -{Math.round(((oldPrice - price) / oldPrice) * 100)}%
