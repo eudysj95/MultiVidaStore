@@ -104,7 +104,7 @@ export default function Home() {
           </button>
         </form>
 
-        <section className="mt-12 rounded-3xl bg-slate-100 p-4 sm:p-6">
+        <section className="mt-12 rounded-3xl bg-brand-bg p-4 sm:p-6">
           <h2 className="text-2xl font-bold text-brand-black mb-6">Categorías</h2>
           {loading ? (
             <div className="text-center text-gray-500 py-8">Cargando categorías...</div>
