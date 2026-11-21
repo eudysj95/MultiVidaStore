@@ -63,10 +63,14 @@ export default function Home() {
     fetchData();
   }, [supabase]);
 
-  const getPrice = (product: DbProduct): number => {
-    if (payment === "dolar") return Number(product.price_usd ?? product.price_bs);
-    if (payment === "cashea") return Number(product.price_cashea ?? product.price_bs);
-    return Number(product.price_bs);
+  const getPrice = (product: DbProduct): number | null => {
+    if (payment === "cashea")
+      return product.price_cashea != null
+        ? Number(product.price_cashea)
+        : product.price_usd != null
+          ? Number(product.price_usd)
+          : null;
+    return product.price_usd != null ? Number(product.price_usd) : null;
   };
 
   return (

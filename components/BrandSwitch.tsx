@@ -6,11 +6,11 @@ type PaymentMethod = "bolivares" | "dolar" | "cashea";
 
 const PAYMENT_METHODS: Record<
   PaymentMethod,
-  { label: string; hint: string }
+  { label: string }
 > = {
-  bolivares: { label: "Bolívares", hint: "Bs." },
-  dolar: { label: "Dólar", hint: "USD" },
-  cashea: { label: "Cashea", hint: "Cashea" },
+  bolivares: { label: "Bolívares" },
+  dolar: { label: "Dólar" },
+  cashea: { label: "Cashea" },
 };
 
 export default function BrandSwitch() {
@@ -27,7 +27,7 @@ export default function BrandSwitch() {
 
   return (
     <div className="inline-flex items-center justify-center gap-1 p-1 bg-gray-100 rounded-xl border border-gray-200">
-      {Object.entries(PAYMENT_METHODS).map(([key, { label, hint }]) => {
+      {Object.entries(PAYMENT_METHODS).map(([key, { label }]) => {
         const method = key as PaymentMethod;
         const isActive = current === method;
         return (
@@ -41,7 +41,6 @@ export default function BrandSwitch() {
             }`}
           >
             {label}
-            <span className="ml-1 text-xs opacity-70">{hint}</span>
           </button>
         );
       })}

@@ -10,15 +10,15 @@ type Currency = "bolivares" | "dolar" | "cashea";
 export type { Currency };
 
 const CURRENCY_SYMBOLS: Record<Currency, string> = {
-  bolivares: "Bs.",
+  bolivares: "USD",
   dolar: "USD",
-  cashea: "Cashea",
+  cashea: "USD",
 };
 
 interface ProductCardProps {
   id: string;
   name: string;
-  price: number;
+  price: number | null;
   oldPrice?: number;
   image: string;
   href?: string;
@@ -38,7 +38,7 @@ export default function ProductCard({
   const currency = (currencyProp ||
     (searchParams.get("payment") as Currency) ||
     "bolivares") as Currency;
-  const symbol = CURRENCY_SYMBOLS[currency];
+  const symbol = CURRENCY_SYMBOLS[currency] ?? "USD";
 
   const imageSrc =
     image && (image.startsWith("https://") || image.startsWith("/"))
@@ -54,7 +54,13 @@ export default function ProductCard({
     setProductLink(window.location.href);
   }, []);
 
-  const message = `Hola, me interesa el producto "${name}" a ${symbol} ${price.toFixed(2)}. Link: ${productLink}`;
+  const priceLabel =
+    price != null ? `${symbol} ${price.toFixed(2)}` : "Consultar precio";
+
+  const message =
+    price != null
+      ? `Hola, me interesa el producto "${name}" a ${symbol} ${price.toFixed(2)}. Link: ${productLink}`
+      : `Hola, me interesa el producto "${name}". Link: ${productLink}`;
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
   const productHref = href || `/producto/${id}`;
@@ -73,7 +79,7 @@ export default function ProductCard({
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               />
             </div>
-            {oldPrice && (
+            {oldPrice && price != null && (
               <span className="absolute top-2 right-2 bg-brand-black text-white text-xs font-bold px-2 py-1 rounded-md">
                 -{Math.round(((oldPrice - price) / oldPrice) * 100)}%
               </span>
@@ -85,7 +91,7 @@ export default function ProductCard({
             </h3>
             <div className="flex items-baseline gap-2">
               <span className="font-bold text-brand-blue text-lg">
-                {symbol} {price.toFixed(2)}
+                {priceLabel}
               </span>
               {oldPrice && (
                 <span className="text-gray-400 text-sm line-through">

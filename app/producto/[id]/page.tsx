@@ -10,9 +10,9 @@ import { createClient } from "@/lib/supabase";
 type Currency = "bolivares" | "dolar" | "cashea";
 
 const CURRENCY_SYMBOLS: Record<Currency, string> = {
-  bolivares: "Bs.",
+  bolivares: "USD",
   dolar: "USD",
-  cashea: "Cashea",
+  cashea: "USD",
 };
 
 interface Product {
@@ -78,14 +78,20 @@ export default function ProductPage() {
     fetchProduct();
   }, [supabase, productId]);
 
-  const symbol = CURRENCY_SYMBOLS[payment] ?? "Bs.";
+  const symbol = CURRENCY_SYMBOLS[payment] ?? "USD";
   const price = product
-    ? payment === "dolar"
-      ? Number(product.price_usd ?? product.price_bs)
-      : payment === "cashea"
-        ? Number(product.price_cashea ?? product.price_bs)
-        : Number(product.price_bs)
-    : 0;
+    ? payment === "cashea"
+      ? product.price_cashea != null
+        ? Number(product.price_cashea)
+        : product.price_usd != null
+          ? Number(product.price_usd)
+          : null
+      : product.price_usd != null
+        ? Number(product.price_usd)
+        : null
+    : null;
+  const priceLabel =
+    price != null ? `${symbol} ${price.toFixed(2)}` : "Consultar precio";
 
   const imageSrc =
     product?.image_url &&
@@ -103,7 +109,9 @@ export default function ProductPage() {
   }, []);
 
   const message = product
-    ? `Hola, me interesa el producto "${product.name}" a ${symbol} ${price.toFixed(2)}. Link: ${productLink}`
+    ? price != null
+      ? `Hola, me interesa el producto "${product.name}" a ${symbol} ${price.toFixed(2)}. Link: ${productLink}`
+      : `Hola, me interesa el producto "${product.name}". Link: ${productLink}`
     : "";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
@@ -170,14 +178,7 @@ export default function ProductPage() {
               </p>
 
               <div className="mt-6">
-                <p className="text-3xl font-bold text-brand-blue">
-                  {symbol} {price.toFixed(2)}
-                </p>
-                {payment === "bolivares" && product.price_usd != null && (
-                  <p className="text-sm text-gray-500 mt-1">
-                    Ref. USD {Number(product.price_usd).toFixed(2)}
-                  </p>
-                )}
+                <p className="text-3xl font-bold text-brand-blue">{priceLabel}</p>
               </div>
 
               <div className="mt-4 flex items-center gap-2">
