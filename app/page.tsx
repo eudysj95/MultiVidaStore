@@ -74,37 +74,43 @@ export default function Home() {
       <div className="flex justify-center pt-6">
         <BrandSwitch />
       </div>
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        <HeroBanner />
+      <section className="w-full bg-brand-blue-dark px-4 py-8 sm:px-6 sm:py-10">
+        <div className="mx-auto max-w-7xl">
+          <div className="mx-auto max-w-3xl rounded-2xl bg-white p-3 shadow-lg shadow-black/10 sm:p-5">
+            <HeroBanner />
+          </div>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const value = (
-              e.currentTarget.elements.namedItem("q") as HTMLInputElement
-            ).value.trim();
-            const params = new URLSearchParams();
-            if (value) params.set("q", value);
-            if (payment) params.set("payment", payment);
-            router.push(`/buscar?${params.toString()}`);
-          }}
-          className="mt-8 max-w-xl mx-auto flex gap-2"
-        >
-          <input
-            name="q"
-            type="search"
-            placeholder="Buscar productos..."
-            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white text-brand-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-blue/40"
-          />
-          <button
-            type="submit"
-            className="px-5 py-3 rounded-xl bg-brand-blue text-white font-medium hover:bg-brand-blue/90 transition-colors"
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const value = (
+                e.currentTarget.elements.namedItem("q") as HTMLInputElement
+              ).value.trim();
+              const params = new URLSearchParams();
+              if (value) params.set("q", value);
+              if (payment) params.set("payment", payment);
+              router.push(`/buscar?${params.toString()}`);
+            }}
+            className="mt-6 max-w-xl mx-auto flex gap-2"
           >
-            Buscar
-          </button>
-        </form>
+            <input
+              name="q"
+              type="search"
+              placeholder="Buscar productos..."
+              className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white text-brand-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-blue/40"
+            />
+            <button
+              type="submit"
+              className="px-5 py-3 rounded-xl bg-white text-brand-blue-dark font-medium hover:bg-white/90 transition-colors"
+            >
+              Buscar
+            </button>
+          </form>
+        </div>
+      </section>
 
-        <section className="mt-12 rounded-3xl bg-brand-bg p-4 sm:p-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <section className="rounded-3xl bg-brand-bg p-4 sm:p-6">
           <h2 className="text-2xl font-bold text-brand-black mb-6">Categorías</h2>
           {loading ? (
             <div className="text-center text-gray-500 py-8">Cargando categorías...</div>

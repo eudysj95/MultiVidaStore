@@ -6,6 +6,7 @@
 
   /* Colores de marca MultiVidaStore (logo del dueño) */
   --brand-blue: #0077BE;
+  --brand-blue-dark: #045a82;
   --brand-black: #000000;
   --brand-white: #ffffff;
   --brand-bg: #e8f4fb;
@@ -18,6 +19,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-brand-blue: var(--brand-blue);
+  --color-brand-blue-dark: var(--brand-blue-dark);
   --color-brand-black: var(--brand-black);
   --color-brand-white: var(--brand-white);
   --color-brand-bg: var(--brand-bg);
